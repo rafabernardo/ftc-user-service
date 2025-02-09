@@ -1,5 +1,5 @@
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
 
 from core.settings import get_settings
 from sqlalchemy import create_engine
