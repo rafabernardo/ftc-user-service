@@ -23,6 +23,7 @@ def upgrade() -> None:
     op.create_table(
         "users",
         sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(), nullable=False),
         sa.Column("email", sa.String(), nullable=False, unique=True),
         sa.Column("hashed_password", sa.String(), nullable=False),
         sa.Column(
@@ -34,6 +35,8 @@ def upgrade() -> None:
         sa.Column(
             "is_editor", sa.Boolean(), server_default="false", nullable=False
         ),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.Index("ix_users_email", "email", unique=True),
     )

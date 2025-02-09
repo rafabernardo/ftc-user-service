@@ -10,11 +10,11 @@ readme = "README.md"
 packages = [
     { include = "api", from = "src"},
     { include = "core", from = "src"},
-    { include = "external", from = "src"},
-    { include = "gateways", from = "src"},
+    { include = "db", from = "src"},
     { include = "interfaces", from = "src"},
-    { include = "models", from = "src"},
-    { include = "use_cases", from = "src"},
+    { include = "repositories", from = "src"},
+    { include = "schemas", from = "src"},
+    { include = "services", from = "src"},
 ]
 
 [tool.poetry.dependencies]
@@ -30,6 +30,7 @@ sqlalchemy = "^2.0.37"
 psycopg2-binary = "^2.9.10"
 alembic = "^1.14.1"
 bcrypt = "^4.2.1"
+pyjwt = "^2.10.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3"

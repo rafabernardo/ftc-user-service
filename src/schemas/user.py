@@ -1,36 +1,33 @@
-from pydantic import BaseModel, EmailStr
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
-class UserBase(BaseModel):
-    email: EmailStr
-    is_admin: bool = False
-    is_reader: bool = True
-    is_editor: bool = False
-
-
-from typing import Optional
-
-from pydantic import BaseModel, EmailStr
-
-
-class UserCreate(BaseModel):
+class UserCredentials(BaseModel):
     email: EmailStr
     password: str
-    is_admin: bool = False
-    is_editor: bool = False
-    is_reader: bool = False
 
 
-class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
-    password: Optional[str] = None
-    is_admin: Optional[bool] = None
-    is_editor: Optional[bool] = None
-    is_reader: Optional[bool] = None
+class User(BaseModel):
+    id: int | None = None
+    name: str
+    email: EmailStr
+
+    is_admin: bool
+    is_reader: bool
+    is_editor: bool
+
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+    model_config = ConfigDict(
+        orm_mode=True, extra="ignore", from_attributes=True
+    )
 
 
-class UserResponse(UserBase):
-    id: int
+class UserInput(User):
+    password: str | None
 
-    class Config:
-        from_attributes = True
+    is_admin: bool | None = Field(default=False)
+    is_reader: bool | None = Field(default=True)
+    is_editor: bool | None = Field(default=False)
