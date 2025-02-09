@@ -16,7 +16,7 @@ class UserService:
         user.password = hashed_password
         existing_user = self.user_repository.get_by_email(user.email)
         if existing_user:
-            raise ValueError("User already exists")
+            raise ValueError("Email already used")
         return self.user_repository.add(user)
 
     def get_user_by_email(self, email: str) -> User | None:
@@ -29,6 +29,9 @@ class UserService:
             email, hashed_password
         )
         return bool(user)
+
+    def list_users(self, limit: int, page: int) -> list[User]:
+        return self.user_repository.list_users(limit, page - 1)
 
     def update_user(self, db: Session, user_id: int, user_data: UserInput):
         """Update user details."""

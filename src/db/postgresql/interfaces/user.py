@@ -22,11 +22,7 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def exists_by_id(self, id: int) -> bool:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def list_users(self) -> list[User]:
+    def list_users(self, limit: int, offset: int) -> list[User]:
         raise NotImplementedError
 
     @abc.abstractmethod

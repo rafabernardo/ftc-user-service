@@ -8,8 +8,7 @@ from src.schemas.user import User, UserCredentials, UserInput
 
 
 class UserRepository(UserRepositoryInterface):
-    def __init__(self):
-        self.db_session = get_postgresql_session()
+    def __init__(self): ...
 
     def add(self, user: UserInput) -> User:
         now = datetime.now()
@@ -23,14 +22,15 @@ class UserRepository(UserRepositoryInterface):
             created_at=now,
             updated_at=now,
         )
-        with self.db_session as session:
+        with get_postgresql_session() as session:
             session.add(db_user)
             session.commit()
             session.refresh(db_user)
-            return User.model_validate(db_user)
+            user = User.model_validate(db_user)
+        return user
 
     def get_by_email(self, email: str) -> User | None:
-        with self.db_session as session:
+        with get_postgresql_session() as session:
             db_user = (
                 session.query(UserDB).filter(UserDB.email == email).first()
             )
@@ -40,7 +40,7 @@ class UserRepository(UserRepositoryInterface):
     def validate_credentials(
         self, user_credentials: UserCredentials
     ) -> User | None:
-        with self.db_session as session:
+        with get_postgresql_session() as session:
             db_user = (
                 session.query(UserDB)
                 .filter(
@@ -52,11 +52,11 @@ class UserRepository(UserRepositoryInterface):
             user = User.model_validate(db_user)
         return user
 
-    def exists_by_id(self, id: int) -> bool:
-        return self.db_session.query(User).filter(User.id == id).count() > 0
-
-    def list_users(self) -> list[User]:
-        return self.db_session.query(User).all()
+    def list_users(self, limit: int, offset: int) -> list[User]:
+        with get_postgresql_session() as session:
+            db_users = session.query(UserDB).offset(offset).limit(limit).all()
+            users = [User.model_validate(db_user) for db_user in db_users]
+        return users
 
     def delete_user(self, id: int) -> bool:
         user = self.get_by_id(id)
