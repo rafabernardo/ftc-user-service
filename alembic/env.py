@@ -1,8 +1,8 @@
-from core.database import Base
-from core.settings import get_settings
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from core.settings import get_settings
+from db.postgresql.database import Base
 
 settings = get_settings()
 

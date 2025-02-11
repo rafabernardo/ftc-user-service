@@ -1,8 +1,9 @@
-from core.dependency_injection import Container
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, Query
-from services.user_service import UserService
+from pydantic import EmailStr
 
+from core.dependency_injection import Container
+from services.user_service import UserService
 from src.schemas.user import User, UserInput
 
 router = APIRouter(prefix="/users")
@@ -22,8 +23,9 @@ def create_user(
 
 
 @router.get("/{user_email}", response_model=User)
+@inject
 def get_user(
-    email: int,
+    email: EmailStr,
     user_service: UserService = (Depends(Provide[Container.user_service])),
 ):
     user = user_service.get_user_by_email(email)

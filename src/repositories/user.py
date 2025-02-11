@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from db.postgresql.database import get_postgresql_session
-
 from src.db.postgresql.interfaces.user import UserRepositoryInterface
 from src.db.postgresql.models.user import User as UserDB
 from src.schemas.user import User, UserCredentials, UserInput
@@ -49,7 +48,7 @@ class UserRepository(UserRepositoryInterface):
                 )
                 .first()
             )
-            user = User.model_validate(db_user)
+            user = User.model_validate(db_user) if db_user else None
         return user
 
     def list_users(self, limit: int, offset: int) -> list[User]:
