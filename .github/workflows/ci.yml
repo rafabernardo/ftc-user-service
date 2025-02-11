@@ -10,6 +10,11 @@ on:
 jobs:
   build-and-analyze:
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: "username"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "database"
+      POSTGRES_HOST: "localhost"
     permissions:
       contents: write
       pull-requests: write
@@ -22,7 +27,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -46,7 +51,7 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Run tests with coverage
-        run: poetry run pytest --cov=src --cov-report=xml
+        run: poetry run pytest --cov=src --cov-report=xml:coverage.xml --cov-report=term
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
