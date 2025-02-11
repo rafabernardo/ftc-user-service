@@ -2,7 +2,6 @@ from datetime import UTC, datetime, timedelta
 
 from db.postgresql.interfaces.user import UserRepositoryInterface
 from schemas.user import UserCredentials
-
 from src.core.security import encode_jwt, hash_password
 from src.core.settings import get_settings
 from src.schemas.token import Token

@@ -1,7 +1,8 @@
-from core.dependency_injection import Container
-from core.settings import get_settings
 from fastapi import FastAPI
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
+
+from core.dependency_injection import Container
+from core.settings import get_settings
 
 # from src.api.routes import auth, users
 from src.api.v1.routes import get_v1_routers

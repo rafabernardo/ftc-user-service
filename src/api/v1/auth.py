@@ -1,11 +1,11 @@
-from core.dependency_injection import Container
-from core.security import verify_jwt
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from core.dependency_injection import Container
+from core.security import verify_jwt
 from schemas.user import UserCredentials
 from services.auth_service import AuthService
-
 from src.schemas.token import Token
 
 router = APIRouter()

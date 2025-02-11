@@ -1,8 +1,9 @@
 import hashlib
 
 import jwt
-from core.settings import settings
 from fastapi import HTTPException
+
+from core.settings import settings
 from schemas.token import Token
 
 

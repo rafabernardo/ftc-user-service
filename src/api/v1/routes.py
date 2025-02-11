@@ -1,5 +1,6 @@
-from api.v1 import auth, users
 from fastapi import APIRouter
+
+from api.v1 import auth, users
 
 
 def get_v1_routers() -> APIRouter:

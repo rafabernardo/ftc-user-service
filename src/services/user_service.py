@@ -1,7 +1,7 @@
-from db.postgresql.interfaces.user import UserRepositoryInterface
-from db.postgresql.models.user import User as UserDB
 from sqlalchemy.orm import Session
 
+from db.postgresql.interfaces.user import UserRepositoryInterface
+from db.postgresql.models.user import User as UserDB
 from src.core.security import hash_password
 from src.schemas.user import User, UserInput
 
