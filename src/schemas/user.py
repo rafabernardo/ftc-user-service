@@ -20,9 +20,7 @@ class User(BaseModel):
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
-    model_config = ConfigDict(
-        orm_mode=True, extra="ignore", from_attributes=True
-    )
+    model_config = ConfigDict(extra="ignore", from_attributes=True)
 
 
 class UserInput(User):

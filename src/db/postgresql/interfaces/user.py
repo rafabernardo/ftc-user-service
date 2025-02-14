@@ -5,14 +5,15 @@ from schemas.user import User, UserCredentials, UserInput
 
 class UserRepositoryInterface(abc.ABC):
     @abc.abstractmethod
-    def __init__(self): ...
-
-    @abc.abstractmethod
     def add(self, user: UserInput) -> User:
         raise NotImplementedError
 
     @abc.abstractmethod
     def get_by_email(self, email: str) -> User | None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_by_id(self, user_id: str) -> User | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -26,9 +27,9 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def delete_user(self, id: int) -> bool:
+    def delete_user(self, user: User) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def update_user(self, id: int, **kwargs) -> User:
+    def update_user(self, user_id: int, **kwargs) -> User:
         raise NotImplementedError
