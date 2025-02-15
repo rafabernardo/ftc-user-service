@@ -36,9 +36,9 @@ def user_service_mock():
 
 
 @pytest.fixture
-def container(user_service):
+def container(user_service_mock):
     container = Container()
-    container.user_service.override(user_service)
+    container.user_service.override(user_service_mock)
     return container
 
 

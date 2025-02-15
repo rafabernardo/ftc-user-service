@@ -7,7 +7,7 @@ from services.user_service import UserService
 def test_list_users(
     client: TestClient, user_service_mock: UserService, setup_wiring
 ):
-    user_service_mock.list_users.return_value = [
+    mock_users = [
         User(
             id="123",
             name="User Test",
@@ -29,8 +29,9 @@ def test_list_users(
             updated_at="2025-02-08T12:57:18.267Z",
         ),
     ]
+    user_service_mock.list_users.return_value = mock_users
 
     response = client.get("/v1/users")
 
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()) == len(mock_users)

@@ -29,3 +29,9 @@ class UserInput(User):
     is_admin: bool | None = Field(default=False)
     is_reader: bool | None = Field(default=True)
     is_editor: bool | None = Field(default=False)
+
+
+class UserUpdate(BaseModel):
+    is_admin: bool | None = Field(default=None)
+    is_reader: bool | None = Field(default=None)
+    is_editor: bool | None = Field(default=None)

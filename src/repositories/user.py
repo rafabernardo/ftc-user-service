@@ -67,11 +67,13 @@ class UserRepository(UserRepositoryInterface):
             return True
         return False
 
-    def update_user(self, user_id: str, **kwargs) -> User:
-        user = self.get_by_id(user_id)
-        if user:
-            for key, value in kwargs.items():
-                setattr(user, key, value)
-            self.db.commit()
-            self.db.refresh(user)
+    def update_user(self, user_id: str, **kwargs) -> User | None:
+        db_user = self.db.query(UserDB).filter(UserDB.id == user_id).first()
+        if db_user is None:
+            return None
+        for key, value in kwargs.items():
+            setattr(db_user, key, value)
+        self.db.commit()
+        self.db.refresh(db_user)
+        user = User.model_validate(db_user)
         return user
