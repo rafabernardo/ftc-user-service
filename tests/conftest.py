@@ -1,30 +1,22 @@
-# from unittest.mock import Mock
+from unittest.mock import MagicMock
 
-# import mongomock
-# import pytest
-# from dependency_injector import providers
+import pytest
 
-# from src.core.dependency_injection import Container
-
-
-# @pytest.fixture
-# def mock_mongo_collection():
-#     collection_mock = Mock()
-#     return collection_mock
+from repositories.user import UserRepository
+from services.auth_service import AuthService
+from services.user_service import UserService
 
 
-# def mocked_database():
-#     client_mock = mongomock.MongoClient()
-#     return client_mock.db
+@pytest.fixture
+def mock_user_repo():
+    return MagicMock(spec=UserRepository)
 
 
-# @pytest.fixture
-# def container():
-#     return Container()
+@pytest.fixture
+def user_service(mock_user_repo):
+    return UserService(user_repository=mock_user_repo)
 
 
-# @pytest.fixture
-# def mock_mongo_db(container: Container):
-#     container.mongo_database.override(providers.Factory(mocked_database))
-#     yield
-#     container.mongo_database.reset_override()
+@pytest.fixture
+def auth_service(mock_user_repo):
+    return AuthService(user_repository=mock_user_repo)
