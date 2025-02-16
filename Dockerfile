@@ -4,30 +4,22 @@ FROM python:3.11-slim-bullseye
 ARG API_PORT=8000
 
 # Set environment variables (Docker Compose will override these)
-ENV PYTHONUNBUFFERED=1 \
-    DATABASE_URL=postgresql+psycopg2://postgres:mypassword@db:5432/mydatabase \
-    API_PORT=${API_PORT}
+# ENV PYTHONUNBUFFERED=1 \
+#     DATABASE_URL=postgresql+psycopg2://postgres:mypassword@db:5432/mydatabase \
+#     API_PORT=${API_PORT}
 
-# WORKDIR /ftc-user-service
+WORKDIR /ftc-user-service
+RUN pip install poetry==1.8.3
+RUN poetry config virtualenvs.create false
 
+COPY pyproject.toml poetry.lock README.md alembic.ini ./
+COPY alembic/ /ftc-user-service/alembic/
+COPY scripts/ /ftc-user-service/scripts/
+COPY src/ /ftc-user-service/src/
+RUN poetry install --no-dev
 
-# Copy only necessary files first (helps with Docker caching)
-# COPY pyproject.toml poetry.lock README.md ./
-COPY . .
-# Install dependencies
-RUN pip install poetry==1.8.3 && \
-    poetry config virtualenvs.create false && \
-    poetry install --only main --no-interaction --no-ansi
-
-# Copy the rest of the application
-# COPY scripts/ /ftc-user-service/scripts/
-# COPY src/ /ftc-user-service/src/
-
-# Ensure scripts are executable
 RUN chmod +x scripts/api.sh
 
-# Expose the FastAPI port
-EXPOSE ${API_PORT}
+#EXPOSE ${API_PORT}
 
-# Default command (override in Docker Compose if needed)
-CMD ["uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+#CMD ["uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

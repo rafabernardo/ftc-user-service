@@ -53,16 +53,56 @@ jobs:
       - name: Run tests with coverage
         run: poetry run pytest --cov=src --cov-report=xml:coverage.xml --cov-report=term
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for PR decoration
-        with:
-          args: >
-            -Dsonar.organization=rafabernardo
-            -Dsonar.projectKey=rafabernardo_ftc-user-service
-            -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.tests=tests/
-            -Dsonar.test.exclusions=tests/**
-            -Dsonar.verbose=true
+terraform-deploy:
+  runs-on: ubuntu-latest
+  env:
+    AWS_REGION: us-east-1
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+    BUCKET_TF_STATE: ${{ secrets.AWS_BUCKET }}
+  needs: build-and-analyze # This ensures this job only runs if build-and-analyze succeeds
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.5.0" # Specify the Terraform version you want to use
+
+    - name: Create terraform.tfvars
+      working-directory: ./terraform
+      run: |
+        echo 'db_url = "${{ secrets.DB_URL }}"' > terraform.tfvars
+
+    - name: Terraform Init
+      run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
+      working-directory: ./terraform
+      env:
+        BUCKET_TF_STATE: ${{ secrets.AWS_BUCKET }}
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      working-directory: ./terraform
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
+
+    - name: Log in to Amazon ECR
+      if: github.ref == 'refs/heads/main'
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build Docker image
+      if: github.ref == 'refs/heads/main'
+      run: |
+        docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:latest .
+
+    - name: Push Docker image to ECR
+      if: github.ref == 'refs/heads/main'
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:latest
