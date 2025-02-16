@@ -18,3 +18,7 @@ clean-up:
 	docker compose down -v
 
 start-up: run
+
+run-pre-commit:
+	pre-commit install && \
+	pre-commit run --all-files

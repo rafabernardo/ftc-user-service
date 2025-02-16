@@ -20,9 +20,7 @@ class User(BaseModel):
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
-    model_config = ConfigDict(
-        orm_mode=True, extra="ignore", from_attributes=True
-    )
+    model_config = ConfigDict(extra="ignore", from_attributes=True)
 
 
 class UserInput(User):
@@ -31,3 +29,9 @@ class UserInput(User):
     is_admin: bool | None = Field(default=False)
     is_reader: bool | None = Field(default=True)
     is_editor: bool | None = Field(default=False)
+
+
+class UserUpdate(BaseModel):
+    is_admin: bool | None = Field(default=None)
+    is_reader: bool | None = Field(default=None)
+    is_editor: bool | None = Field(default=None)
